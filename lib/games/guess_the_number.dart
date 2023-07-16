@@ -1,6 +1,6 @@
 import 'dart:math';
 
-class GuessTheNumber {
+class GuessTheNumberGame {
   final _answer = Random().nextInt(1001);
   int _guesses = 0;
 

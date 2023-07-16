@@ -72,11 +72,9 @@ class Game {
 
   void endOfGame(Games game) {
     String text = "\n--------------------\n";
-
     for (var action in Actions.values) {
       text += "${action.name}: ${action.actionName}\n";
     }
-
     print(text);
 
     rawMode = true;
