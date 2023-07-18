@@ -1,9 +1,10 @@
 enum Actions {
-  x("Return to games list"),
-  n("Play again");
+  none(""),
+  l("Return to games list"),
+  n("Play again"),
+  x("Exit");
 
   final String actionName;
 
   const Actions(this.actionName);
-
 }

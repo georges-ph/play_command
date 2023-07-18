@@ -10,7 +10,7 @@ void guessTheNumber() {
   GuessTheNumberGame guessTheNumber = GuessTheNumberGame();
   bool guessed = false;
 
-  print("\n----- GUESS THE NUMBER -----");
+  print("----- GUESS THE NUMBER -----");
   print("Choose a number between 0 and 1000");
 
   while (!guessed) {
@@ -25,20 +25,24 @@ void guessTheNumber() {
 }
 
 void rockPaperScissors() {
-  print("\n----- ROCK PAPER SCISSORS -----");
+  print("----- ROCK PAPER SCISSORS -----");
 
   RockPaperScissorsGame rockPaperScissorsGame = RockPaperScissorsGame();
   RockPaperScissors weapon = RockPaperScissors.none;
 
-  while (rockPaperScissorsGame.rounds != 0) {
+  while (rockPaperScissorsGame.rounds <= 3) {
     do {
       weapon = rockPaperScissorsGame.chooseWeapon();
     } while (weapon == RockPaperScissors.none);
     rockPaperScissorsGame.play(weapon);
   }
 
+  print("\n---------------\n");
+
   print("Your score: ${rockPaperScissorsGame.playerScore}");
   print("Computer's score: ${rockPaperScissorsGame.computerScore}");
+
+  stdout.writeln();
 
   if (rockPaperScissorsGame.playerScore > rockPaperScissorsGame.computerScore) {
     print("You defeated the computer");

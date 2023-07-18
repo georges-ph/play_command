@@ -7,13 +7,7 @@ import 'package:play_command/play_command.dart';
 class Game {
   static final Game instance = Game._internal();
 
-  // Save original modes
-  late bool _echoMode, _lineMode;
-
-  Game._internal() {
-    _echoMode = stdin.echoMode;
-    _lineMode = stdin.lineMode;
-  }
+  Game._internal();
 
   void displayList() {
     print("\n-------------------- GAMES LIST --------------------\n");
@@ -31,8 +25,8 @@ class Game {
       stdin.echoMode = false;
       stdin.lineMode = false;
     } else {
-      stdin.lineMode = _lineMode;
-      stdin.echoMode = _echoMode;
+      stdin.lineMode = true;
+      stdin.echoMode = true;
     }
   }
 
@@ -57,7 +51,7 @@ class Game {
   }
 
   void playGame(Games game) {
-    print("--------------------");
+    print("\n--------------------\n");
 
     switch (game) {
       case Games.guess_the_number:
@@ -72,28 +66,37 @@ class Game {
 
   void endOfGame(Games game) {
     String text = "\n--------------------\n";
-    for (var action in Actions.values) {
+    for (var action in Actions.values.skip(1)) {
       text += "${action.name}: ${action.actionName}\n";
     }
+    text += "--------------------\n";
     print(text);
 
-    rawMode = true;
-    String input = String.fromCharCode(stdin.readByteSync());
-    rawMode = false;
+    Actions action = Actions.none;
+    do {
+      rawMode = true;
+      String input = String.fromCharCode(stdin.readByteSync());
+      rawMode = false;
 
-    Actions action = Actions.values.singleWhere(
-      (element) => element.name == input,
-      orElse: () => Actions.x,
-    );
+      action = Actions.values.singleWhere(
+        (element) => element.name == input,
+        orElse: () => Actions.none,
+      );
+    } while (action == Actions.none);
 
     switch (action) {
-      case Actions.x:
+      case Actions.l:
         start();
         break;
 
       case Actions.n:
         playGame(game);
         break;
+
+      case Actions.x:
+        exit(0);
+
+      default:
     }
   }
 }

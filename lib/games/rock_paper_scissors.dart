@@ -5,7 +5,7 @@ import 'package:play_command/enums/rock_paper_scissors.dart';
 
 class RockPaperScissorsGame {
   int _playerScore = 0, _computerScore = 0;
-  int _rounds = 3;
+  int _rounds = 1;
 
   int get playerScore => _playerScore;
   int get computerScore => _computerScore;
@@ -13,15 +13,14 @@ class RockPaperScissorsGame {
 
   RockPaperScissors chooseWeapon() {
     // Display weapons list
-    String text = "\n";
-    for (var weapon in RockPaperScissors.values) {
-      if (weapon == RockPaperScissors.none) continue;
+    String text = "\n----- ROUND $_rounds -----\n";
+    for (var weapon in RockPaperScissors.values.skip(1)) {
       text += "${weapon.name.substring(0, 1)}: ${weapon.name}\n";
     }
     print(text);
 
     // Ask user for weapon
-    stdout.write("\nChoose your weapon: ");
+    stdout.write("Choose your weapon: ");
     String? input;
     do {
       input = stdin.readLineSync();
@@ -38,7 +37,9 @@ class RockPaperScissorsGame {
         .skip(1)
         .elementAt(Random().nextInt(RockPaperScissors.values.skip(1).length));
 
-    print("You: ${weapon.name}\nComputer: ${computerWeapon.name}");
+    print("\nYou: ${weapon.name}\nComputer: ${computerWeapon.name}");
+
+    stdout.writeln();
 
     if (computerWeapon == weapon) {
       print("It's a tie!");
@@ -50,11 +51,11 @@ class RockPaperScissorsGame {
             weapon == RockPaperScissors.rock) {
       print("You won!");
       _playerScore++;
-      _rounds--;
+      _rounds++;
     } else {
       print("You lose!");
       _computerScore++;
-      _rounds--;
+      _rounds++;
     }
   }
 }
