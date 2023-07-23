@@ -15,8 +15,9 @@ void guessTheNumber() {
 
   while (!guessed) {
     stdout.write("\nYour guess: ");
-    guessed =
-        guessTheNumber.guess(int.tryParse(stdin.readLineSync() ?? "") ?? -1);
+    int? number = int.tryParse(stdin.readLineSync() ?? "");
+    if (number == null) continue;
+    guessed = guessTheNumber.guess(number);
   }
 
   print("\nIt took you ${guessTheNumber.guesses} guesses");

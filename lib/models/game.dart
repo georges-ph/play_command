@@ -12,7 +12,7 @@ class Game {
   void displayList() {
     print("\n-------------------- GAMES LIST --------------------\n");
     for (var (i, game) in Games.values.indexed) {
-      print("${i + 1}. ${game.name}");
+      print("${i + 1}. ${game.gameName}");
     }
   }
 
