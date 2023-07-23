@@ -2,7 +2,8 @@
 
 enum Games {
   guess_the_number("Guess the number"),
-  rock_paper_scissors("Rock, Paper, Scissors");
+  rock_paper_scissors("Rock, Paper, Scissors"),
+  memory_game("Memory Game");
 
   final String gameName;
 

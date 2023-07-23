@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:play_command/enums/action.dart';
 import 'package:play_command/enums/games.dart';
+import 'package:play_command/models/game_console.dart';
 import 'package:play_command/play_command.dart';
 
 class Game {
@@ -61,6 +62,10 @@ class Game {
       case Games.rock_paper_scissors:
         rockPaperScissors();
         break;
+
+      case Games.memory_game:
+        memoryGame();
+        break;
     }
   }
 
@@ -71,6 +76,8 @@ class Game {
     }
     text += "--------------------\n";
     print(text);
+
+    GameConsole.instance.hideCursor();
 
     Actions action = Actions.none;
     do {
@@ -83,6 +90,8 @@ class Game {
         orElse: () => Actions.none,
       );
     } while (action == Actions.none);
+
+    GameConsole.instance.showCursor();
 
     switch (action) {
       case Actions.l:

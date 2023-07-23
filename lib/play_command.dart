@@ -3,8 +3,10 @@ import 'dart:io';
 import 'package:play_command/enums/games.dart';
 import 'package:play_command/enums/rock_paper_scissors.dart';
 import 'package:play_command/games/guess_the_number.dart';
+import 'package:play_command/games/memory_game.dart';
 import 'package:play_command/games/rock_paper_scissors.dart';
 import 'package:play_command/models/game.dart';
+import 'package:play_command/models/game_console.dart';
 
 void guessTheNumber() {
   GuessTheNumberGame guessTheNumber = GuessTheNumberGame();
@@ -52,4 +54,53 @@ void rockPaperScissors() {
   }
 
   Game.instance.endOfGame(Games.rock_paper_scissors);
+}
+
+void memoryGame() {
+  print("----- MEMORY GAME -----");
+
+  MemoryGame memoryGame = MemoryGame();
+
+  print(
+      "You will be shown a list of numbers where you will have 3 seconds to memorize and try to guess them. (Enter the numbers directly without spaces)\n");
+
+  sleep(Duration(seconds: 3));
+
+  print("Starting in...");
+  int count = 3;
+  while (count != 0) {
+    print(count.toString());
+    sleep(Duration(seconds: 1));
+    GameConsole.instance
+      ..cursorUp()
+      ..eraseLine();
+    count--;
+  }
+
+  GameConsole.instance
+    ..cursorUp()
+    ..eraseLine();
+
+  List<int> sequence = memoryGame.generateSequence();
+  print(sequence.join(" "));
+  sleep(Duration(seconds: 3));
+  GameConsole.instance
+    ..cursorUp()
+    ..eraseLine();
+
+  print("What was the sequence?");
+  String? input;
+  do {
+    input = stdin.readLineSync();
+  } while (input == null);
+
+  stdout.writeln();
+
+  if (input == sequence.join()) {
+    print("You are correct!");
+  } else {
+    print("Incorrect sequence. The sequence was: ${sequence.join(" ")}");
+  }
+
+  Game.instance.endOfGame(Games.memory_game);
 }
