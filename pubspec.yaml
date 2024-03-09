@@ -4,11 +4,10 @@ version: 1.0.0
 repository: https://github.com/georges-ph/play_command
 
 environment:
-  sdk: ^3.0.5
+  sdk: ^3.3.0
 
 dependencies:
   dart_console: ^1.2.0
-  # path: ^1.8.0
 
 dev_dependencies:
   lints: ^2.0.0

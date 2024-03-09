@@ -5,6 +5,7 @@ import 'package:play_command/enums/rock_paper_scissors.dart';
 import 'package:play_command/games/guess_the_number.dart';
 import 'package:play_command/games/memory_game.dart';
 import 'package:play_command/games/rock_paper_scissors.dart';
+import 'package:play_command/games/tic_tac_toe.dart';
 import 'package:play_command/models/game.dart';
 import 'package:play_command/models/game_console.dart';
 
@@ -103,4 +104,32 @@ void memoryGame() {
   }
 
   Game.instance.endOfGame(Games.memory_game);
+}
+
+
+void ticTacToe(){
+  TicTacToe ticTacToe = TicTacToe();
+  ticTacToe.printBoard();
+
+  while (true) {
+    String? input;
+    do {
+      stdout.write("Player ${ticTacToe.currentPlayer}: make your move (1-9): ");
+      input = stdin.readLineSync();
+    } while (input == null ||
+        input.isEmpty ||
+        int.tryParse(input) == null ||
+        int.parse(input) < 1 ||
+        int.parse(input) > 9);
+
+    if (!ticTacToe.makeMove(int.parse(input))) {
+      print("Invalid move. Try again.");
+    }
+
+    ticTacToe.printBoard();
+
+    if (ticTacToe.checkWin()) break;
+  }
+
+  print("Player ${ticTacToe.currentPlayer} won!");
 }

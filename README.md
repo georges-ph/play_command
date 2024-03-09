@@ -6,3 +6,5 @@ A console application that allows you to play different games in the command lin
 
 - **Guess the Number:** The computer chooses a random number and you have to guess it. The computer will provide hints if your guess is *higher* or *lower*.
 - **Rock Paper Scissors:** Choose one of the objects (rock, paper, or scissors) and the computer will randomly select its choice and determine the winner.
+- **Tic Tac Toe:** Play the classic game of Tic Tac Toe against the computer. Get three of your symbols (*X* or *O*) in a row to win!
+- **Memory Game:** Test your memory with this simple game. You'll be shown a sequence of numbers to memorize for a few seconds. Then, try to recall the sequence by typing it out. Can you remember them all?

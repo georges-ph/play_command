@@ -66,6 +66,10 @@ class Game {
       case Games.memory_game:
         memoryGame();
         break;
+
+        case Games.tic_tac_toe:
+        ticTacToe();
+        break;
     }
   }
 
