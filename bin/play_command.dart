@@ -1,5 +1,3 @@
-import 'package:play_command/models/game.dart';
+import 'package:play_command/play_command.dart';
 
-void main(List<String> args) {
-  Game.instance.start();
-}
+void main() => run();

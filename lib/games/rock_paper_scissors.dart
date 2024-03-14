@@ -1,20 +1,69 @@
 import 'dart:io';
-import 'dart:math';
 
-import 'package:play_command/enums/rock_paper_scissors.dart';
+import '../enums/rock_paper_scissors.dart' as rps;
+import 'game.dart';
 
-class RockPaperScissorsGame {
+class RockPaperScissors implements Game {
   int _playerScore = 0, _computerScore = 0;
   int _rounds = 1;
 
-  int get playerScore => _playerScore;
-  int get computerScore => _computerScore;
-  int get rounds => _rounds;
+  @override
+  void reset() {
+    _playerScore = 0;
+    _computerScore = 0;
+    _rounds = 1;
+  }
 
-  RockPaperScissors chooseWeapon() {
+  @override
+  void play() {
+    print("----- ROCK PAPER SCISSORS -----");
+
+    // Play the game for 3 rounds
+    while (_rounds <= 3) {
+      _loop();
+    }
+
+    print("\n---------------\n");
+
+    print("Your score: $_playerScore");
+    print("Computer's score: $_computerScore");
+
+    stdout.writeln();
+
+    if (_playerScore > _computerScore) {
+      print("You defeated the computer");
+    } else {
+      print("The computer defeated you");
+    }
+  }
+
+  void _loop() {
+    final userWeapon = _chooseWeapon();
+    final computerWeapon = rps.RockPaperScissors.randomWeapon;
+
+    print("\nYou: ${userWeapon.name}\nComputer: ${computerWeapon.name}");
+
+    stdout.writeln();
+
+    if (computerWeapon == userWeapon) {
+      print("It's a tie!");
+    } else if ((computerWeapon == rps.RockPaperScissors.rock && userWeapon == rps.RockPaperScissors.paper) ||
+        (computerWeapon == rps.RockPaperScissors.paper && userWeapon == rps.RockPaperScissors.scissors) ||
+        (computerWeapon == rps.RockPaperScissors.scissors && userWeapon == rps.RockPaperScissors.rock)) {
+      print("You won!");
+      _playerScore++;
+      _rounds++;
+    } else {
+      print("You lose!");
+      _computerScore++;
+      _rounds++;
+    }
+  }
+
+  rps.RockPaperScissors _chooseWeapon() {
     // Display weapons list
     String text = "\n----- ROUND $_rounds -----\n";
-    for (var weapon in RockPaperScissors.values.skip(1)) {
+    for (final weapon in rps.RockPaperScissors.values) {
       text += "${weapon.name.substring(0, 1)}: ${weapon.name}\n";
     }
     print(text);
@@ -26,36 +75,9 @@ class RockPaperScissorsGame {
       input = stdin.readLineSync();
     } while (input == null);
 
-    return RockPaperScissors.values.skip(1).singleWhere(
-          (element) => element.name.toLowerCase().substring(0, 1) == input,
-          orElse: () => RockPaperScissors.none,
-        );
-  }
-
-  void play(RockPaperScissors weapon) {
-    RockPaperScissors computerWeapon = RockPaperScissors.values
-        .skip(1)
-        .elementAt(Random().nextInt(RockPaperScissors.values.skip(1).length));
-
-    print("\nYou: ${weapon.name}\nComputer: ${computerWeapon.name}");
-
-    stdout.writeln();
-
-    if (computerWeapon == weapon) {
-      print("It's a tie!");
-    } else if (computerWeapon == RockPaperScissors.rock &&
-            weapon == RockPaperScissors.paper ||
-        computerWeapon == RockPaperScissors.paper &&
-            weapon == RockPaperScissors.scissors ||
-        computerWeapon == RockPaperScissors.scissors &&
-            weapon == RockPaperScissors.rock) {
-      print("You won!");
-      _playerScore++;
-      _rounds++;
-    } else {
-      print("You lose!");
-      _computerScore++;
-      _rounds++;
-    }
+    return rps.RockPaperScissors.values.singleWhere(
+      (element) => element.name.toLowerCase().substring(0, 1) == input,
+      orElse: () => rps.RockPaperScissors.randomWeapon,
+    );
   }
 }
