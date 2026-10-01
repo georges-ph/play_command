@@ -1,85 +1,121 @@
-import 'dart:io';
+import 'dart:math';
 
+import '../terminal.dart';
 import 'game.dart';
 
-class TicTacToe implements Game {
-  List<String> _board = List.filled(9, " ");
-  String _currentPlayer = "X";
+/// A Tic Tac Toe board. Cells are indexed 0-8, left to right, top to bottom.
+class TicTacToeBoard {
+  static const List<List<int>> lines = [
+    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+    [0, 4, 8], [2, 4, 6], // diagonals
+  ];
 
-  @override
-  void reset() {
-    _board = List.filled(9, " ");
-    _currentPlayer = "X";
+  final List<String> cells = List.filled(9, " ");
+
+  bool isFree(int index) => cells[index] == " ";
+
+  bool get isFull => !cells.contains(" ");
+
+  List<int> get freeCells => [
+        for (var i = 0; i < 9; i++)
+          if (isFree(i)) i
+      ];
+
+  /// The symbol that has three in a row, or `null` if nobody has.
+  String? get winner {
+    for (final line in lines) {
+      final symbol = cells[line[0]];
+      if (symbol != " " && cells[line[1]] == symbol && cells[line[2]] == symbol) return symbol;
+    }
+    return null;
+  }
+
+  /// Picks a move for [symbol]: win if possible, otherwise block the
+  /// opponent, otherwise take the center, a corner or any free cell.
+  int bestMove(String symbol, Random random) {
+    final opponent = symbol == "X" ? "O" : "X";
+    for (final player in [symbol, opponent]) {
+      for (final cell in freeCells) {
+        cells[cell] = player;
+        final wins = winner == player;
+        cells[cell] = " ";
+        if (wins) return cell;
+      }
+    }
+    if (isFree(4)) return 4;
+    final corners = [0, 2, 6, 8].where(isFree).toList();
+    if (corners.isNotEmpty) return corners[random.nextInt(corners.length)];
+    final free = freeCells;
+    return free[random.nextInt(free.length)];
   }
 
   @override
-  void play() {
-    _printBoard();
+  String toString() {
+    final rows = [
+      for (var i = 0; i < 9; i += 3) " ${cells[i]} | ${cells[i + 1]} | ${cells[i + 2]}",
+    ];
+    return rows.join("\n-----------\n");
+  }
+}
 
-    while (!_isBoardFull() && !_checkWin()) {
-      String? input;
-      do {
-        stdout.write("Player $_currentPlayer: make your move (1-9): ");
-        input = stdin.readLineSync();
-      } while (input == null ||
-          input.isEmpty ||
-          int.tryParse(input) == null ||
-          int.parse(input) < 1 ||
-          int.parse(input) > 9);
+class TicTacToe extends Game {
+  final Random _random;
 
-      if (!_makeMove(int.parse(input))) {
-        print("Invalid move. Try again.");
+  TicTacToe([Random? random]) : _random = random ?? Random();
+
+  @override
+  String get name => "Tic Tac Toe";
+
+  @override
+  String get description => "Three in a row, against the computer or a friend";
+
+  @override
+  GameOutcome play() {
+    header(name);
+    print("1. Play against the computer");
+    print("2. Two players");
+    final vsComputer = promptInt("Choose a mode: ", min: 1, max: 2) == 1;
+
+    print("\nCells are numbered like a phone keypad:");
+    print(" 1 | 2 | 3\n-----------\n 4 | 5 | 6\n-----------\n 7 | 8 | 9\n");
+
+    final board = TicTacToeBoard();
+    var current = "X";
+
+    while (board.winner == null && !board.isFull) {
+      if (vsComputer && current == "O") {
+        final move = board.bestMove("O", _random);
+        board.cells[move] = "O";
+        print("Computer plays ${move + 1}");
+      } else {
+        final label = vsComputer ? "Your move" : "Player $current";
+        var move = promptInt("$label (1-9): ", min: 1, max: 9) - 1;
+        while (!board.isFree(move)) {
+          print("That cell is taken.");
+          move = promptInt("$label (1-9): ", min: 1, max: 9) - 1;
+        }
+        board.cells[move] = current;
       }
 
-      _printBoard();
+      print("\n$board\n");
+      current = current == "X" ? "O" : "X";
     }
 
-    if (_checkWin()) {
-      print("Player $_currentPlayer won!");
-    } else {
+    final winner = board.winner;
+    if (winner == null) {
       print("It's a tie!");
+      return GameOutcome(vsComputer ? GameResult.draw : GameResult.none);
     }
-  }
-
-  void _printBoard() {
-    for (var i = 0; i < _board.length; i += 3) {
-      print(" ${_board[i]} | ${_board[i + 1]} | ${_board[i + 2]}");
-      if (i < 6) print("-----------");
+    if (!vsComputer) {
+      print("Player $winner won!");
+      return const GameOutcome(GameResult.none);
     }
-  }
-
-  bool _makeMove(int position) {
-    if (_board[position - 1] != " ") return false;
-    _board[position - 1] = _currentPlayer;
-    if (_checkWin()) return false;
-    _currentPlayer = _currentPlayer == "X" ? "O" : "X";
-    return true;
-  }
-
-  bool _checkWin() {
-    // Check rows
-    for (var i = 0; i < _board.length; i += 3) {
-      if (_board[i] == _currentPlayer && _board[i + 1] == _currentPlayer && _board[i + 2] == _currentPlayer) {
-        return true;
-      }
+    if (winner == "X") {
+      print(colored("You won!", ConsoleColor.green));
+      return const GameOutcome(GameResult.win);
     }
-
-    // Check columns
-    for (var i = 0; i < 3; i++) {
-      // Adjusted loop
-      if (_board[i] == _currentPlayer && _board[i + 3] == _currentPlayer && _board[i + 6] == _currentPlayer) {
-        return true;
-      }
-    }
-
-    // Check diagonals
-    if (_board[0] == _currentPlayer && _board[4] == _currentPlayer && _board[8] == _currentPlayer) return true;
-
-    if (_board[2] == _currentPlayer && _board[4] == _currentPlayer && _board[6] == _currentPlayer) return true;
-
-    // Otherwise, there is a tie
-    return false;
+    print(colored("The computer won.", ConsoleColor.red));
+    return const GameOutcome(GameResult.loss);
   }
-
-  bool _isBoardFull() => _board.every((element) => element != " ");
 }

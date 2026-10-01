@@ -1,69 +1,67 @@
 import 'dart:io';
 import 'dart:math';
 
-import '../game_manager.dart';
+import '../terminal.dart';
 import 'game.dart';
 
-class Memory implements Game {
-  List<int> _sequence = [];
-  final int _sequenceLength = 5;
+class Memory extends Game {
+  static const int startLength = 3;
+
+  final Random _random;
+
+  Memory([Random? random]) : _random = random ?? Random();
 
   @override
-  void reset() {
-    _sequence = [];
+  String get name => "Memory Game";
+
+  @override
+  String get description => "Remember ever-longer number sequences";
+
+  @override
+  GameOutcome play() {
+    header(name);
+    print("Memorize the numbers shown, then type them back without spaces.");
+    print("Each correct answer adds one more number.\n");
+    sleep(const Duration(seconds: 2));
+
+    var length = startLength;
+    var best = 0;
+
+    while (true) {
+      _countdown();
+
+      final sequence = List.generate(length, (_) => _random.nextInt(9) + 1);
+      print(sequence.join(" "));
+      sleep(Duration(milliseconds: 1500 + 500 * length));
+      _eraseLastLine();
+
+      final input = prompt("What was the sequence? ").replaceAll(" ", "");
+
+      if (input != sequence.join()) {
+        print(colored("\nIncorrect. The sequence was: ${sequence.join(" ")}", ConsoleColor.red));
+        break;
+      }
+
+      best = length;
+      print("${colored("Correct!", ConsoleColor.green)} Next: ${length + 1} numbers.\n");
+      length++;
+    }
+
+    print("\nYou remembered up to $best numbers.");
+    return GameOutcome(GameResult.none, score: best);
   }
 
-  @override
-  void play() {
-    print("----- MEMORY GAME -----");
-    print(
-        "You will be shown a list of numbers where you will have 3 seconds to memorize and try to guess them. (Enter the numbers directly without spaces)\n");
-
-    sleep(Duration(seconds: 3));
-
+  void _countdown() {
     print("Starting in...");
-    int count = 3;
-    while (count != 0) {
-      print(count.toString());
-      sleep(Duration(seconds: 1));
-      GameManager.instance
-        ..cursorUp()
-        ..eraseLine();
-      count--;
+    for (var count = 3; count > 0; count--) {
+      print(count);
+      sleep(const Duration(seconds: 1));
+      _eraseLastLine();
     }
-
-    GameManager.instance
-      ..cursorUp()
-      ..eraseLine();
-
-    List<int> sequence = _generateSequence();
-    print(sequence.join(" "));
-    sleep(Duration(seconds: 3));
-    GameManager.instance
-      ..cursorUp()
-      ..eraseLine();
-
-    print("What was the sequence?");
-    String? input;
-    do {
-      input = stdin.readLineSync();
-    } while (input == null);
-
-    stdout.writeln();
-
-    if (input == sequence.join()) {
-      print("You are correct!");
-    } else {
-      print("Incorrect sequence. The sequence was: ${sequence.join(" ")}");
-    }
+    _eraseLastLine();
   }
 
-  /// Generates a sequence of numbers from 1 to 9
-  List<int> _generateSequence() {
-    for (var i = 0; i < _sequenceLength; i++) {
-      int randomNumber = Random().nextInt(9) + 1;
-      _sequence.add(randomNumber);
-    }
-    return _sequence;
-  }
+  void _eraseLastLine() => console
+    ..cursorUp()
+    ..eraseLine();
 }

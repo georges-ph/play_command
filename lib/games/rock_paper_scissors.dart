@@ -1,83 +1,88 @@
-import 'dart:io';
+import 'dart:math';
 
-import '../enums/rock_paper_scissors.dart' as rps;
+import '../terminal.dart';
 import 'game.dart';
 
-class RockPaperScissors implements Game {
-  int _playerScore = 0, _computerScore = 0;
-  int _rounds = 1;
+enum Weapon {
+  rock,
+  paper,
+  scissors;
 
-  @override
-  void reset() {
-    _playerScore = 0;
-    _computerScore = 0;
-    _rounds = 1;
+  /// Whether this weapon beats [other].
+  bool beats(Weapon other) => switch (this) {
+        rock => other == scissors,
+        paper => other == rock,
+        scissors => other == paper,
+      };
+
+  /// Parses a full name or first letter, e.g. `r` or `Rock`.
+  static Weapon? parse(String input) {
+    final text = input.trim().toLowerCase();
+    if (text.isEmpty) return null;
+    for (final weapon in values) {
+      if (weapon.name == text || weapon.name[0] == text) return weapon;
+    }
+    return null;
   }
+}
+
+class RockPaperScissors extends Game {
+  /// Number of round wins needed to win the match (best of 3).
+  static const int winsNeeded = 2;
+
+  final Random _random;
+
+  RockPaperScissors([Random? random]) : _random = random ?? Random();
 
   @override
-  void play() {
-    print("----- ROCK PAPER SCISSORS -----");
+  String get name => "Rock, Paper, Scissors";
 
-    // Play the game for 3 rounds
-    while (_rounds <= 3) {
-      _loop();
+  @override
+  String get description => "Best of 3 against the computer";
+
+  @override
+  GameOutcome play() {
+    header(name);
+
+    var playerScore = 0, computerScore = 0, round = 1;
+
+    while (playerScore < winsNeeded && computerScore < winsNeeded) {
+      print("\n----- ROUND $round -----");
+      for (final weapon in Weapon.values) {
+        print("${weapon.name[0]}: ${weapon.name}");
+      }
+
+      Weapon? player;
+      while (player == null) {
+        player = Weapon.parse(prompt("\nChoose your weapon: "));
+        if (player == null) print("Type r, p or s.");
+      }
+      final computer = Weapon.values[_random.nextInt(Weapon.values.length)];
+
+      print("\nYou: ${player.name}\nComputer: ${computer.name}\n");
+
+      if (player == computer) {
+        print("It's a tie! Replaying the round.");
+      } else if (player.beats(computer)) {
+        print(colored("You won the round!", ConsoleColor.green));
+        playerScore++;
+        round++;
+      } else {
+        print(colored("You lost the round!", ConsoleColor.red));
+        computerScore++;
+        round++;
+      }
     }
 
     print("\n---------------\n");
+    print("Your score: $playerScore");
+    print("Computer's score: $computerScore\n");
 
-    print("Your score: $_playerScore");
-    print("Computer's score: $_computerScore");
-
-    stdout.writeln();
-
-    if (_playerScore > _computerScore) {
-      print("You defeated the computer");
-    } else {
-      print("The computer defeated you");
+    if (playerScore > computerScore) {
+      print(colored("You defeated the computer!", ConsoleColor.green));
+      return const GameOutcome(GameResult.win);
     }
-  }
-
-  void _loop() {
-    final userWeapon = _chooseWeapon();
-    final computerWeapon = rps.RockPaperScissors.randomWeapon;
-
-    print("\nYou: ${userWeapon.name}\nComputer: ${computerWeapon.name}");
-
-    stdout.writeln();
-
-    if (computerWeapon == userWeapon) {
-      print("It's a tie!");
-    } else if ((computerWeapon == rps.RockPaperScissors.rock && userWeapon == rps.RockPaperScissors.paper) ||
-        (computerWeapon == rps.RockPaperScissors.paper && userWeapon == rps.RockPaperScissors.scissors) ||
-        (computerWeapon == rps.RockPaperScissors.scissors && userWeapon == rps.RockPaperScissors.rock)) {
-      print("You won!");
-      _playerScore++;
-      _rounds++;
-    } else {
-      print("You lose!");
-      _computerScore++;
-      _rounds++;
-    }
-  }
-
-  rps.RockPaperScissors _chooseWeapon() {
-    // Display weapons list
-    String text = "\n----- ROUND $_rounds -----\n";
-    for (final weapon in rps.RockPaperScissors.values) {
-      text += "${weapon.name.substring(0, 1)}: ${weapon.name}\n";
-    }
-    print(text);
-
-    // Ask user for weapon
-    stdout.write("Choose your weapon: ");
-    String? input;
-    do {
-      input = stdin.readLineSync();
-    } while (input == null);
-
-    return rps.RockPaperScissors.values.singleWhere(
-      (element) => element.name.toLowerCase().substring(0, 1) == input,
-      orElse: () => rps.RockPaperScissors.randomWeapon,
-    );
+    print(colored("The computer defeated you.", ConsoleColor.red));
+    return const GameOutcome(GameResult.loss);
   }
 }

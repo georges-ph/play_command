@@ -1,47 +1,47 @@
-import 'dart:io';
 import 'dart:math';
 
+import '../terminal.dart';
 import 'game.dart';
 
-class GuessTheNumber implements Game {
-  int _answer = Random().nextInt(1001);
-  int _guesses = 0;
-  bool _guessed = false;
+class GuessTheNumber extends Game {
+  static const int max = 1000;
+
+  final Random _random;
+
+  GuessTheNumber([Random? random]) : _random = random ?? Random();
 
   @override
-  void reset() {
-    _answer = Random().nextInt(1001);
-    _guesses = 0;
-    _guessed = false;
-  }
+  String get name => "Guess the Number";
 
   @override
-  void play() {
-    print("----- GUESS THE NUMBER -----");
-    print("Choose a number between 0 and 1000");
+  String get description => "Find the secret number with higher/lower hints";
 
-    while (!_guessed) {
-      stdout.write("\nYour guess: ");
-      int? number = int.tryParse(stdin.readLineSync() ?? "");
-      if (number == null) continue;
-      _guessed = _guess(number);
+  @override
+  bool get lowerScoreIsBetter => true;
+
+  @override
+  GameOutcome play() {
+    header(name);
+    print("Choose a number between 0 and $max");
+
+    final answer = _random.nextInt(max + 1);
+    var guesses = 0;
+
+    while (true) {
+      final guess = promptInt("\nYour guess: ", min: 0, max: max);
+      guesses++;
+
+      if (guess < answer) {
+        print("Higher!");
+      } else if (guess > answer) {
+        print("Lower!");
+      } else {
+        print(colored("YOU GUESSED IT RIGHT!", ConsoleColor.green));
+        break;
+      }
     }
 
-    print("\nIt took you $_guesses guesses");
-  }
-
-  bool _guess(int number) {
-    _guesses++;
-
-    if (number < _answer) {
-      print("HIGHER");
-      return false;
-    } else if (number > _answer) {
-      print("lower");
-      return false;
-    } else {
-      print("YOU GUESSED IT RIGHT!");
-      return true;
-    }
+    print("\nIt took you $guesses ${guesses == 1 ? "guess" : "guesses"}");
+    return GameOutcome(GameResult.win, score: guesses);
   }
 }
