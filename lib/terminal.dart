@@ -1,6 +1,9 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:dart_console/dart_console.dart';
+import 'package:ffi/ffi.dart';
+import 'package:win32/win32.dart';
 
 export 'package:dart_console/dart_console.dart' show ConsoleColor, ControlCharacter, Key;
 
@@ -59,20 +62,46 @@ Key readKey() {
     return Key.printable(String.fromCharCode(byte));
   }
 
+  _saveNormalMode();
   final key = console.readKey();
   restoreTerminal();
   if (key.controlChar == ControlCharacter.ctrlC) quit();
   return key;
 }
 
-/// Puts the terminal back into normal line-by-line input with echo.
+/// Switches to raw mode, where key presses arrive one at a time without
+/// echo. Call [restoreTerminal] when done.
+void enterRawMode() {
+  _saveNormalMode();
+  console.rawMode = true;
+}
+
+/// The Windows console input mode from before raw mode was first used.
+int? _normalInputMode;
+
+void _saveNormalMode() {
+  if (!Platform.isWindows || _normalInputMode != null) return;
+  final handle = GetStdHandle(STD_INPUT_HANDLE).value;
+  final mode = calloc<Uint32>();
+  try {
+    if (GetConsoleMode(handle, mode).value) _normalInputMode = mode.value;
+  } finally {
+    calloc.free(mode);
+  }
+}
+
+/// Leaves raw mode and puts the terminal back exactly as it was.
 ///
-/// dart_console 1.2.0 clears every input flag on Windows when it leaves raw
-/// mode, so line input and echo are restored explicitly.
+/// On Windows, dart_console's `rawMode = false` clears every console input
+/// flag (line input, echo, Ctrl+C), which leaves the terminal unusable, so
+/// the saved mode is restored instead.
 void restoreTerminal() {
   if (!stdin.hasTerminal) return;
-  stdin.lineMode = true;
-  stdin.echoMode = true;
+  if (console.rawMode) console.rawMode = false;
+  final mode = _normalInputMode;
+  if (Platform.isWindows && mode != null) {
+    SetConsoleMode(GetStdHandle(STD_INPUT_HANDLE).value, CONSOLE_MODE(mode));
+  }
 }
 
 /// Restores the terminal and exits the app.

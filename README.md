@@ -6,41 +6,49 @@
 
 A console application that lets you play different games in the command line interface (CLI), written in Dart.
 
+**Website:** https://georges-ph.github.io/play_command/
+
 ```
 -------------------- GAMES LIST --------------------
 
-1. Guess the number
-2. Rock, Paper, Scissors
-3. Memory Game
-4. Tic Tac Toe
+ 1. Guess the Number         Find the secret number with higher/lower hints
+ 2. Rock, Paper, Scissors    Best of 3 against the computer
+ 3. Memory Game              Remember ever-longer number sequences
+ 4. Tic Tac Toe              Three in a row, against the computer or a friend
+ 5. Hangman                  Guess the word one letter at a time
+ 6. Word Scramble            Unscramble 5 words, 3 tries each
+ 7. Blackjack                Get closer to 21 than the dealer
+ 8. Pig (Dice)               Dice race to 50, but a 1 loses your turn
+ 9. Snake                    Eat, grow, and don't bite your tail
+10. Minesweeper              Clear the field without hitting a mine
+
+ x. Exit
+
 Choose your game: _
 ```
 
 ## Games
 
-- **Guess the Number:** The computer chooses a random number and you have to guess it. The computer will tell you if your guess is *higher* or *lower*.
-- **Rock Paper Scissors:** Choose one of the objects (rock, paper, or scissors). The computer picks its own at random and the winner is decided over 3 rounds.
-- **Tic Tac Toe:** The classic game for two players on the same keyboard. Get three of your symbols (*X* or *O*) in a row to win!
-- **Memory Game:** You'll be shown a sequence of numbers to memorize for a few seconds. Then try to recall the sequence by typing it out. Can you remember them all?
+- **Guess the Number:** The computer picks a number from 0 to 1000 and tells you if your guess is *higher* or *lower*.
+- **Rock Paper Scissors:** Pick rock, paper, or scissors against the computer. First to win 2 rounds wins the match.
+- **Memory Game:** Memorize a sequence of numbers, then type it back. Each correct answer adds one more number. How far can you go?
+- **Tic Tac Toe:** Get three of your symbols in a row, against the computer or a friend on the same keyboard.
+- **Hangman:** Guess the hidden word one letter at a time before the gallows is complete.
+- **Word Scramble:** Unscramble 5 words with 3 tries each. Type `?` for a hint.
+- **Blackjack:** Hit or stand to get closer to 21 than the dealer without going bust.
+- **Pig (Dice):** Roll as often as you dare and bank your points, but a 1 wipes out your turn. First to 50 wins.
+- **Snake:** The classic. Steer with the arrow keys or WASD, eat apples, and don't hit the walls or yourself.
+- **Minesweeper:** Move with the arrow keys or WASD, reveal with Space or Enter, and flag mines with F.
 
-## Getting started
+## Download
 
-Requires the [Dart SDK](https://dart.dev/get-dart) 3.3 or newer.
+Download `play_command.exe` from the [latest release](https://github.com/georges-ph/play_command/releases/latest) and double-click it. If SmartScreen warns about an unrecognized app, choose *More info* > *Run anyway*.
 
-```sh
-git clone https://github.com/georges-ph/play_command.git
-cd play_command
-dart pub get
-dart run
-```
-
-To build a standalone executable:
-
-```sh
-dart compile exe bin/play_command.dart -o play_command
-```
+Windows only for now.
 
 After each game, press `n` to play again, `l` to return to the games list, or `x` to exit.
+
+To build from source instead, see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Status
 

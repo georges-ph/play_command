@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'games/game.dart';
 import 'games/games.dart';
 import 'terminal.dart';
@@ -33,14 +35,21 @@ Future<void> run() async {
   }
 }
 
+/// Shows the games list until the player picks a game, or `x` to exit.
 Game _chooseGame() {
   print("\n-------------------- GAMES LIST --------------------\n");
   for (final (i, game) in allGames.indexed) {
     print("${(i + 1).toString().padLeft(2)}. ${game.name.padRight(24)} ${game.description}");
   }
-  print("");
-  final number = promptInt("Choose your game: ", min: 1, max: allGames.length);
-  return allGames[number - 1];
+  print("\n x. Exit\n");
+
+  while (true) {
+    final input = prompt("Choose your game: ").toLowerCase();
+    if (input == "x") quit();
+    final number = int.tryParse(input);
+    if (number != null && number >= 1 && number <= allGames.length) return allGames[number - 1];
+    print("Enter a number from 1 to ${allGames.length} or x.");
+  }
 }
 
 _AfterGame _afterGame() {
@@ -50,7 +59,7 @@ _AfterGame _afterGame() {
   }
   print("--------------------");
 
-  console.hideCursor();
+  if (stdout.hasTerminal) console.hideCursor();
   _AfterGame? action;
   while (action == null) {
     final char = readKey().char.toLowerCase();
@@ -58,6 +67,6 @@ _AfterGame _afterGame() {
       if (candidate.key == char) action = candidate;
     }
   }
-  console.showCursor();
+  if (stdout.hasTerminal) console.showCursor();
   return action;
 }

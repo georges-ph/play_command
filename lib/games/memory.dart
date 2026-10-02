@@ -18,7 +18,7 @@ class Memory extends Game {
   String get description => "Remember ever-longer number sequences";
 
   @override
-  GameOutcome play() {
+  void play() {
     header(name);
     print("Memorize the numbers shown, then type them back without spaces.");
     print("Each correct answer adds one more number.\n");
@@ -48,7 +48,7 @@ class Memory extends Game {
     }
 
     print("\nYou remembered up to $best numbers.");
-    return GameOutcome(GameResult.none, score: best);
+    return;
   }
 
   void _countdown() {

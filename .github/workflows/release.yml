@@ -1,0 +1,36 @@
+name: Release binaries
+
+# Builds the Windows executable and attaches it to the GitHub Release.
+# Runs when a release is published, or manually for an existing tag.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to attach the executable to (e.g. v1.2.0)
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    env:
+      TAG: ${{ github.event.release.tag_name || inputs.tag }}
+      ASSET: play_command.exe
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.11.3
+      - run: dart pub get
+      - run: dart compile exe bin/play_command.dart -o "$ASSET"
+        shell: bash
+      - run: gh release upload "$TAG" "$ASSET" --clobber
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,14 +1,16 @@
 name: play_command
 description: A CLI to play games
-version: 1.1.0
+version: 1.2.0
 repository: https://github.com/georges-ph/play_command
 
 environment:
-  sdk: ^3.3.0
+  sdk: ^3.11.0
 
 dependencies:
-  dart_console: ^1.2.0
+  dart_console: ^5.1.0
+  ffi: ^2.2.0
+  win32: ^6.4.0
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.21.0
+  lints: ^6.1.0
+  test: ^1.32.0

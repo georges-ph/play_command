@@ -17,10 +17,7 @@ class GuessTheNumber extends Game {
   String get description => "Find the secret number with higher/lower hints";
 
   @override
-  bool get lowerScoreIsBetter => true;
-
-  @override
-  GameOutcome play() {
+  void play() {
     header(name);
     print("Choose a number between 0 and $max");
 
@@ -42,6 +39,6 @@ class GuessTheNumber extends Game {
     }
 
     print("\nIt took you $guesses ${guesses == 1 ? "guess" : "guesses"}");
-    return GameOutcome(GameResult.win, score: guesses);
+    return;
   }
 }

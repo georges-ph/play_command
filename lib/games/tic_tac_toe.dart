@@ -18,9 +18,9 @@ class TicTacToeBoard {
   bool get isFull => !cells.contains(" ");
 
   List<int> get freeCells => [
-        for (var i = 0; i < 9; i++)
-          if (isFree(i)) i
-      ];
+    for (var i = 0; i < 9; i++)
+      if (isFree(i)) i,
+  ];
 
   /// The symbol that has three in a row, or `null` if nobody has.
   String? get winner {
@@ -52,9 +52,7 @@ class TicTacToeBoard {
 
   @override
   String toString() {
-    final rows = [
-      for (var i = 0; i < 9; i += 3) " ${cells[i]} | ${cells[i + 1]} | ${cells[i + 2]}",
-    ];
+    final rows = [for (var i = 0; i < 9; i += 3) " ${cells[i]} | ${cells[i + 1]} | ${cells[i + 2]}"];
     return rows.join("\n-----------\n");
   }
 }
@@ -71,7 +69,7 @@ class TicTacToe extends Game {
   String get description => "Three in a row, against the computer or a friend";
 
   @override
-  GameOutcome play() {
+  void play() {
     header(name);
     print("1. Play against the computer");
     print("2. Two players");
@@ -105,17 +103,17 @@ class TicTacToe extends Game {
     final winner = board.winner;
     if (winner == null) {
       print("It's a tie!");
-      return GameOutcome(vsComputer ? GameResult.draw : GameResult.none);
+      return;
     }
     if (!vsComputer) {
       print("Player $winner won!");
-      return const GameOutcome(GameResult.none);
+      return;
     }
     if (winner == "X") {
       print(colored("You won!", ConsoleColor.green));
-      return const GameOutcome(GameResult.win);
+      return;
     }
     print(colored("The computer won.", ConsoleColor.red));
-    return const GameOutcome(GameResult.loss);
+    return;
   }
 }

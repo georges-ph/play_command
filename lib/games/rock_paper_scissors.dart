@@ -10,10 +10,10 @@ enum Weapon {
 
   /// Whether this weapon beats [other].
   bool beats(Weapon other) => switch (this) {
-        rock => other == scissors,
-        paper => other == rock,
-        scissors => other == paper,
-      };
+    rock => other == scissors,
+    paper => other == rock,
+    scissors => other == paper,
+  };
 
   /// Parses a full name or first letter, e.g. `r` or `Rock`.
   static Weapon? parse(String input) {
@@ -41,7 +41,7 @@ class RockPaperScissors extends Game {
   String get description => "Best of 3 against the computer";
 
   @override
-  GameOutcome play() {
+  void play() {
     header(name);
 
     var playerScore = 0, computerScore = 0, round = 1;
@@ -80,9 +80,9 @@ class RockPaperScissors extends Game {
 
     if (playerScore > computerScore) {
       print(colored("You defeated the computer!", ConsoleColor.green));
-      return const GameOutcome(GameResult.win);
+      return;
     }
     print(colored("The computer defeated you.", ConsoleColor.red));
-    return const GameOutcome(GameResult.loss);
+    return;
   }
 }

@@ -4,7 +4,7 @@ Thanks for your interest in improving Play Command!
 
 ## Setup
 
-1. Install the [Dart SDK](https://dart.dev/get-dart) (3.3 or newer).
+1. Install the [Dart SDK](https://dart.dev/get-dart) (3.11 or newer).
 2. Clone the repo and fetch dependencies:
 
    ```sh
